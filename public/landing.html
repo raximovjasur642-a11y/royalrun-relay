@@ -1,0 +1,70 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#1F4E9C">
+<title>Royal Run — Xona kodi</title>
+<style>
+:root{--lapis:#1F4E9C;--turq:#2EA7A0;--gold:#E8B04B;--goldl:#FFE3A0;--cream:#F3E6CC;--navy:#0C1634;--red:#E0533C}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:Nunito,'Segoe UI',Roboto,system-ui,sans-serif;color:var(--cream)}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;gap:18px;background:
+ radial-gradient(circle at 50% 50%,rgba(232,176,75,.16) 0 9px,transparent 10px) 0 0/56px 56px,
+ conic-gradient(from 45deg at 50% 50%,rgba(46,167,160,.13) 0 25%,transparent 0 50%,rgba(46,167,160,.13) 0 75%,transparent 0) 0 0/56px 56px,
+ linear-gradient(170deg,#3a2350 0%,#1d1640 45%,#0c1634 100%)}
+.logo{font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:44px;letter-spacing:2px;text-align:center;
+ background:linear-gradient(#FFF3C4,#E8B04B 55%,#9A6418);-webkit-background-clip:text;background-clip:text;color:transparent}
+.crown{font-size:46px;line-height:1;filter:drop-shadow(0 4px 0 #6b4310)}
+.panel{width:100%;max-width:440px;background:rgba(8,14,40,.8);border:3px solid var(--gold);border-radius:22px;padding:24px 20px;
+ box-shadow:0 0 0 4px rgba(31,78,156,.9),0 0 0 7px var(--gold),0 12px 34px rgba(0,0,0,.55);position:relative;text-align:center}
+.panel:before,.panel:after{content:'';position:absolute;width:26px;height:26px;top:-14px;left:-14px;background:radial-gradient(circle,var(--turq) 35%,var(--gold) 38% 60%,transparent 62%)}
+.panel:after{left:auto;right:-14px}
+h1{margin:0 0 14px;font-family:Georgia,serif;font-size:26px;color:var(--goldl);letter-spacing:1px}
+#code{width:100%;font-family:Georgia,serif;font-weight:900;font-size:56px;letter-spacing:18px;text-align:center;text-transform:uppercase;padding:12px 0 12px 18px;
+ border-radius:16px;border:3px solid var(--gold);background:#0c1634;color:var(--goldl);outline:none}
+#code::placeholder{color:rgba(232,176,75,.25)}
+.btn{margin-top:16px;width:100%;min-height:68px;font-size:26px;font-weight:900;letter-spacing:2px;color:#2A1A08;border:3px solid var(--gold);border-radius:16px;
+ background:linear-gradient(180deg,#FFE3A0,#E8B04B 50%,#B07A22);box-shadow:0 0 0 2px #0c1634,0 6px 0 #6b4310;transition:transform .1s;text-transform:uppercase;cursor:pointer}
+.btn:active{transform:scale(.94)}
+.btn:hover{filter:brightness(1.08)}
+#msg{min-height:26px;margin-top:12px;font-weight:800;color:var(--red)}
+.hint{opacity:.8;font-size:15px;margin-top:6px}
+.langs{display:flex;gap:10px}
+.langs button{min-width:64px;min-height:44px;border-radius:12px;border:2px solid var(--gold);background:rgba(12,22,52,.85);color:var(--cream);font-weight:900;font-size:16px;cursor:pointer}
+.langs button.on{background:linear-gradient(180deg,var(--turq),var(--lapis));color:#fff}
+</style></head><body>
+<div class="crown">👑</div>
+<div class="logo">ROYAL RUN</div>
+<div class="panel">
+ <h1 data-t="title"></h1>
+ <input id="code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="text" placeholder="ABCD">
+ <button class="btn" id="go" data-t="enter"></button>
+ <div id="msg"></div>
+ <div class="hint" data-t="hint"></div>
+</div>
+<div class="langs"><button data-l="uz">UZ</button><button data-l="ru">RU</button><button data-l="en">EN</button></div>
+<script>
+var T={uz:{title:'XONA KODI',enter:'Kirish',hint:"Kodni katta ekrandan oling",noroom:"Bunday xona yo'q — kodni tekshiring",full:"Xona to'la (3 kishi)",short:"Kod 4 ta harf",net:"Server bilan aloqa yo'q — qayta urinib ko'ring"},
+ru:{title:'КОД КОМНАТЫ',enter:'Войти',hint:'Код — на большом экране',noroom:'Комната не найдена — проверьте код',full:'Комната заполнена (3 игрока)',short:'Код — 4 буквы',net:'Нет связи с сервером — попробуйте ещё раз'},
+en:{title:'ROOM CODE',enter:'Join',hint:'The code is on the big screen',noroom:'No such room — check the code',full:'Room is full (3 players)',short:'The code is 4 letters',net:"Can't reach the server — try again"}};
+var lang=localStorage.getItem('rr_lang')||'__LANG__';
+function t(k){return (T[lang]||T.uz)[k]}
+function apply(){document.documentElement.lang=lang;document.querySelectorAll('[data-t]').forEach(function(e){e.textContent=t(e.getAttribute('data-t'))});
+ document.querySelectorAll('[data-l]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-l')==lang)})}
+document.querySelectorAll('[data-l]').forEach(function(b){b.onclick=function(){lang=b.getAttribute('data-l');localStorage.setItem('rr_lang',lang);apply()}});
+var inp=document.getElementById('code'),msg=document.getElementById('msg');
+inp.value='__CODE__';
+inp.addEventListener('input',function(){inp.value=inp.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);msg.textContent=''});
+inp.addEventListener('keydown',function(e){if(e.key=='Enter')go()});
+document.getElementById('go').onclick=go;
+function go(){
+ var c=inp.value.toUpperCase();
+ if(c.length!=4){msg.textContent=t('short');return}
+ fetch('/api/room/'+c,{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+  if(!j.exists){msg.textContent=t('noroom');return}
+  if(j.full){msg.textContent=t('full');return}
+  location.href='/play/'+c+'?lang='+lang;
+ }).catch(function(){msg.textContent=t('net')});
+}
+apply();
+if(inp.value.length!=4)inp.focus();
+</script></body></html>

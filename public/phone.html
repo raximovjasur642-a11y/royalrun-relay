@@ -1,0 +1,139 @@
+<!doctype html>
+<html><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+<meta name='theme-color' content='#1F4E9C'>
+<title>Royal Run</title>
+<style>
+:root{--lapis:#1F4E9C;--turq:#2EA7A0;--gold:#E8B04B;--goldl:#FFE3A0;--terra:#C8643C;--cream:#F3E6CC;--ink:#2C163E;--navy:#0C1634;--red:#E0533C;--green:#4CC27A}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;font-family:Nunito,'Segoe UI',Roboto,system-ui,sans-serif;color:var(--cream);touch-action:none}
+body{background:
+ radial-gradient(circle at 50% 50%,rgba(232,176,75,.16) 0 9px,transparent 10px) 0 0/56px 56px,
+ conic-gradient(from 45deg at 50% 50%,rgba(46,167,160,.13) 0 25%,transparent 0 50%,rgba(46,167,160,.13) 0 75%,transparent 0) 0 0/56px 56px,
+ linear-gradient(170deg,#3a2350 0%,#1d1640 45%,#0c1634 100%)}
+.scr{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:18px;gap:14px}
+.scr.on{display:flex}
+.panel{width:100%;max-width:520px;background:rgba(8,14,40,.78);border:3px solid var(--gold);border-radius:22px;padding:18px;
+ box-shadow:0 0 0 4px rgba(31,78,156,.9),0 0 0 7px var(--gold),0 10px 30px rgba(0,0,0,.5);position:relative}
+.panel:before,.panel:after{content:'';position:absolute;width:26px;height:26px;background:radial-gradient(circle,var(--turq) 35%,var(--gold) 38% 60%,transparent 62%);top:-14px;left:-14px}
+.panel:after{left:auto;right:-14px}
+h1{margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-weight:900;letter-spacing:1px;text-align:center;font-size:30px;
+ background:linear-gradient(#FFF3C4,#E8B04B 55%,#9A6418);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.sub{text-align:center;opacity:.85;font-size:16px}
+input{width:100%;font-size:24px;padding:14px;border-radius:14px;border:3px solid var(--gold);background:#0c1634;color:var(--cream);text-align:center;outline:none;user-select:text;-webkit-user-select:text}
+.btn{width:100%;min-height:64px;font-size:22px;font-weight:900;letter-spacing:1px;color:#fff;border:3px solid var(--gold);border-radius:16px;
+ background:linear-gradient(180deg,var(--turq),var(--lapis));box-shadow:0 0 0 2px #0c1634,0 6px 0 #0a2a5c;transition:transform .1s;text-transform:uppercase}
+.btn:active{transform:scale(.94)}
+.btn.gold{background:linear-gradient(180deg,#FFE3A0,#E8B04B 50%,#B07A22);color:#2A1A08}
+.btn.green{background:linear-gradient(180deg,#6fdc98,#2f9a5a)}
+.btn:disabled{filter:grayscale(.8) brightness(.7)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:520px;overflow-y:auto;max-height:58vh;padding:4px}
+.card{position:relative;background:rgba(12,22,52,.9);border:2px solid rgba(232,176,75,.6);border-radius:16px;padding:8px;text-align:center}
+.card img{width:84px;height:84px;object-fit:contain;border-radius:12px;background:linear-gradient(#f3e6cc,#d9c49b);border:2px solid var(--gold)}
+.card .n{font-weight:900;font-size:17px;margin-top:4px;color:var(--goldl)}
+.card .p{font-size:12px;color:#8fe3db;line-height:1.25;margin-top:3px}
+.card.sel{border:3px solid var(--turq);box-shadow:0 0 14px var(--turq)}
+.card.taken{filter:grayscale(.9) brightness(.6)}
+.card .band{position:absolute;top:34px;left:50%;transform:translateX(-50%) rotate(-12deg);background:var(--red);color:#fff;font-weight:900;padding:3px 12px;border-radius:8px;border:2px solid #fff;font-size:16px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{padding:6px 12px;border-radius:12px;background:rgba(0,0,0,.4);border:2px solid;font-weight:800}
+.big{font-family:Georgia,serif;font-size:120px;font-weight:900;color:var(--gold);text-shadow:0 6px 0 #6b4310}
+#game{justify-content:flex-start;padding:10px}
+.hud{display:flex;gap:8px;width:100%}
+.stat{flex:1;background:rgba(8,14,40,.8);border:2px solid var(--gold);border-radius:14px;padding:6px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--goldl)}
+.stat span{font-size:12px;opacity:.8}
+#pad{flex:1;width:100%;margin-top:10px;border-radius:22px;border:3px dashed rgba(232,176,75,.55);display:flex;align-items:center;justify-content:center;flex-direction:column;
+ background:radial-gradient(circle at 50% 50%,rgba(46,167,160,.18),transparent 65%)}
+#pad .arrows{font-size:56px;opacity:.35;line-height:1.1;text-align:center}
+#power{margin-top:12px;font-size:22px;font-weight:900;color:var(--gold);min-height:30px}
+#flash{position:fixed;inset:0;background:rgba(224,40,30,.55);opacity:0;pointer-events:none;transition:opacity .35s}
+.medal{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:80px;font-weight:900;color:#0c1634;
+ border:6px solid #fff8;box-shadow:0 0 0 6px var(--gold),0 0 30px rgba(232,176,75,.7)}
+.row{display:flex;justify-content:space-between;padding:6px 4px;border-bottom:1px solid rgba(232,176,75,.25);font-weight:800}
+#spec{position:fixed;left:0;right:0;top:40%;text-align:center;font-family:Georgia,serif;font-size:34px;font-weight:900;color:var(--gold);display:none;text-shadow:0 3px 0 #000}
+#conn{position:fixed;bottom:6px;left:0;right:0;text-align:center;font-size:12px;opacity:.6}
+</style></head><body>
+<div id='sName' class='scr on'><div class='panel'><h1>ROYAL RUN</h1><div class='sub' data-t='enterName'></div><br>
+<input id='nm' maxlength='16' autocomplete='off'><br><br><button class='btn gold' id='goName' data-t='continue'></button></div></div>
+<div id='sWait' class='scr'><div class='panel'><h1 data-t='wait'></h1><div class='sub' id='waitMsg'></div><br><div class='chips' id='waitChips'></div><div class='big' id='cd' style='display:none;text-align:center'></div></div></div>
+<div id='sPick' class='scr'><h1 data-t='pick'></h1><div class='grid' id='grid'></div><div style='width:100%;max-width:520px'><button class='btn green' id='readyBtn' data-t='ready'></button></div></div>
+<div id='game' class='scr'>
+ <div class='hud'><div class='stat'><b id='gTime'>0</b><span data-t='time'></span></div><div class='stat'><b id='gScore'>0</b><span data-t='score'></span></div><div class='stat'><b id='gPlace'>1</b><span data-t='place'></span></div><div class='stat'><b id='gDist'>0</b><span>m</span></div></div>
+ <div id='pad'><div class='arrows'>&#9650;<br>&#9664; &#9654;<br>&#9660;</div><div class='sub' data-t='swipe'></div><div id='power'></div></div>
+</div>
+<div id='sResult' class='scr'><div class='panel' style='text-align:center'><div style='display:flex;justify-content:center'><div class='medal' id='medal'>1</div></div>
+<h1 id='resTitle'></h1><div id='resList'></div><br><button class='btn gold' id='againBtn' data-t='again'></button><div class='sub' id='againMsg'></div></div></div>
+<div id='spec' data-t='spectator'></div><div id='flash'></div><div id='conn'></div>
+<script>
+var T={
+uz:{enterName:'Ismingizni yozing',continue:'Davom etish',wait:'Kuting',connecting:'Ulanmoqda…',waiting:'Boshqalar tayyorlanmoqda…',pick:'Qahramon tanlang',ready:'Tayyor',notReady:'Bekor qilish',band:'BAND',time:'Vaqt',score:'Ball',place:"O'rin",swipe:'Svayp qiling · bosish — kuch',again:"Yana o'ynash",spectator:'TOMOSHABIN',placeN:"{0}-o'rin",full:"O'yin to'la (3 kishi)",kicked:"Siz o'chirildingiz",go:'BOSHLANDI!',againWait:"Kutilmoqda: {0}/{1}",paused:'PAUZA',missile:'TARVUZ',trap:'QOVUN',turbo:'TURBO',shield:'QALQON',offline:"Ulanish uzildi — qayta ulanmoqda…",noroom:"Xona topilmadi — kodni tekshiring"},
+ru:{enterName:'Введите имя',continue:'Продолжить',wait:'Ждите',connecting:'Подключение…',waiting:'Остальные готовятся…',pick:'Выберите героя',ready:'Готов',notReady:'Отмена',band:'ЗАНЯТ',time:'Время',score:'Очки',place:'Место',swipe:'Свайпайте · нажатие — сила',again:'Играть ещё',spectator:'ЗРИТЕЛЬ',placeN:'{0} место',full:'Игра заполнена (3 игрока)',kicked:'Вас удалили',go:'СТАРТ!',againWait:'Ждём: {0}/{1}',paused:'ПАУЗА',missile:'АРБУЗ',trap:'ДЫНЯ',turbo:'ТУРБО',shield:'ЩИТ',offline:'Связь потеряна — переподключение…',noroom:'Комната не найдена — проверьте код'},
+en:{enterName:'Enter your name',continue:'Continue',wait:'Please wait',connecting:'Connecting…',waiting:'Others are getting ready…',pick:'Pick your runner',ready:'Ready',notReady:'Cancel',band:'TAKEN',time:'Time',score:'Score',place:'Place',swipe:'Swipe · tap — power',again:'Play again',spectator:'SPECTATING',placeN:'Place {0}',full:'Game is full (3 players)',kicked:'You were removed',go:'GO!',againWait:'Waiting: {0}/{1}',paused:'PAUSED',missile:'MELON',trap:'TRAP',turbo:'TURBO',shield:'SHIELD',offline:'Disconnected — reconnecting…',noroom:'Room not found — check the code'}};
+var lang='__LANG__',ws=null,me={runner:'',ready:false},screen='sName',lastLobby=null,stopped=false;
+// LAN: ws://kompyuter/ws; Internet (vositachi server): wss://server/ws?role=phone&room=KOD
+var wsUrl=(location.protocol=='https:'?'wss://':'ws://')+location.host+(window.RR_ROOM?'/ws?role=phone&room='+window.RR_ROOM:'/ws');
+var store=window.RR_ROOM?'rr_'+window.RR_ROOM+'_':'rr_';
+function t(k){return (T[lang]||T.uz)[k]||k}
+function fmt(k,a,b){return t(k).replace('{0}',a).replace('{1}',b)}
+function applyLang(){document.querySelectorAll('[data-t]').forEach(function(e){e.textContent=t(e.getAttribute('data-t'))});document.getElementById('nm').placeholder=t('enterName')}
+function show(id){screen=id;document.querySelectorAll('.scr').forEach(function(s){s.classList.toggle('on',s.id==id)});if(id!='game')document.getElementById('spec').style.display='none'}
+// ID har tabga alohida (sessionStorage) — sahifa yangilansa saqlanadi (qayta ulanish), bir brauzerdagi bir nechta tab esa alohida o'yinchi
+var pid=null;try{pid=sessionStorage.getItem(store+'pid')}catch(x){}
+if(!pid){pid='p'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);try{sessionStorage.setItem(store+'pid',pid)}catch(x){}}
+var savedName=localStorage.getItem(store+'name')||localStorage.getItem('rr_name')||'';document.getElementById('nm').value=savedName;
+function send(s){if(ws&&ws.readyState==1)ws.send(s)}
+function connect(){
+ document.getElementById('conn').textContent='';
+ if(stopped)return;
+ document.getElementById('waitMsg').textContent=t('connecting');
+ ws=new WebSocket(wsUrl);
+ ws.onopen=function(){send('hello|'+pid+'|'+(localStorage.getItem(store+'name')||''));document.getElementById('waitMsg').textContent=t('waiting')};
+ ws.onmessage=function(e){var m;try{m=JSON.parse(e.data)}catch(x){return}on(m)};
+ ws.onclose=function(){if(stopped)return;document.getElementById('conn').textContent=t('offline');setTimeout(connect,1200)};
+}
+function on(m){
+ if(m.lang&&m.lang!=lang){lang=m.lang;applyLang();if(lastLobby)renderLobby(lastLobby);if(ws&&ws.readyState==1&&!stopped)document.getElementById('waitMsg').textContent=t('waiting')}
+ if(m.t=='lobby'){lastLobby=m;me.runner=m.runner;me.ready=m.ready;renderLobby(m);if(screen=='game'||screen=='sResult'&&!m.ready){}else if(m.ready)show('sWait');else if(screen!='sPick')show('sPick')}
+ else if(m.t=='countdown'){show('sWait');var c=document.getElementById('cd');c.style.display='block';c.textContent=m.n}
+ else if(m.t=='start'){document.getElementById('cd').style.display='none';show('game')}
+ else if(m.t=='state'){if(screen!='game')show('game');
+  document.getElementById('gTime').textContent=m.time;document.getElementById('gScore').textContent=m.score;
+  document.getElementById('gPlace').textContent=m.place+'/'+m.n;document.getElementById('gDist').textContent=m.goal?m.dist+'/'+m.goal:m.dist;
+  document.getElementById('power').textContent=m.power?t(m.power):'';
+  var sp=document.getElementById('spec');sp.style.display=(m.spec||m.paused)?'block':'none';sp.textContent=m.paused?t('paused'):t('spectator')}
+ else if(m.t=='hit'){var f=document.getElementById('flash');f.style.transition='none';f.style.opacity=1;setTimeout(function(){f.style.transition='opacity .35s';f.style.opacity=0},60);if(navigator.vibrate)navigator.vibrate([120,40,120])}
+ else if(m.t=='result'){show('sResult');var md=document.getElementById('medal');var cols=['#E8B04B','#C9D1DC','#C8813C'];md.textContent=m.place||'-';md.style.background=cols[Math.max(0,Math.min(2,(m.place||3)-1))];
+  document.getElementById('resTitle').textContent=fmt('placeN',m.place);var h='';(m.players||[]).forEach(function(p){h+='<div class=row><span style=color:'+p.color+'>'+p.place+'. '+esc(p.name)+'</span><span>'+p.dist+' m · '+p.score+'</span></div>'});
+  if(h)document.getElementById('resList').innerHTML=h;document.getElementById('againMsg').textContent='';document.getElementById('againBtn').disabled=false;if(navigator.vibrate)navigator.vibrate(m.place==1?[80,60,80,60,200]:100)}
+ else if(m.t=='again'){document.getElementById('againMsg').textContent=fmt('againWait',m.ready,m.total)}
+ else if(m.t=='full'){stopped=true;show('sWait');document.getElementById('waitMsg').textContent=t('full')}
+ else if(m.t=='noroom'){stopped=true;show('sWait');document.getElementById('waitMsg').textContent=t('noroom')}
+ else if(m.t=='kicked'){stopped=true;show('sWait');document.getElementById('waitMsg').textContent=t('kicked')}
+}
+function esc(s){return String(s).replace(/[<>&]/g,'')}
+function renderLobby(m){
+ var g=document.getElementById('grid'),h='';
+ m.runners.forEach(function(r){var taken=r.by&&r.id!=me.runner;h+='<div class=\"card'+(r.id==me.runner?' sel':'')+(taken?' taken':'')+'\" data-id=\"'+r.id+'\"><img src=\"/p/'+r.id+'.png\" onerror=\"this.style.visibility=\'hidden\'\"><div class=n>'+esc(r.name)+'</div><div class=p>'+r.perks+'</div>'+(taken?'<div class=band>'+t('band')+'</div>':'')+'</div>'});
+ g.innerHTML=h;
+ g.querySelectorAll('.card').forEach(function(c){c.onclick=function(){if(c.classList.contains('taken'))return;send('pick|'+c.getAttribute('data-id'))}});
+ var rb=document.getElementById('readyBtn');rb.disabled=!me.runner;rb.textContent=me.ready?t('notReady'):t('ready');
+ var ch='';m.players.forEach(function(p){ch+='<span class=chip style=\"border-color:'+p.color+';color:'+p.color+'\">'+esc(p.name)+(p.ready?' ✓':'')+'</span>'});
+ document.getElementById('waitChips').innerHTML=ch;
+}
+document.getElementById('goName').onclick=function(){var n=document.getElementById('nm').value.trim().slice(0,16);if(!n)return;localStorage.setItem(store+'name',n);localStorage.setItem('rr_name',n);show('sWait');if(ws&&ws.readyState==1)send('hello|'+pid+'|'+n);else connect()};
+document.getElementById('readyBtn').onclick=function(){send('ready|'+(me.ready?'0':'1'))};
+document.getElementById('againBtn').onclick=function(){send('again');this.disabled=true};
+// Svayp: chap/o'ng/yuqori/past; qisqa bosish — poyga kuchi
+var sx=0,sy=0,st=0,done=false;
+var pad=document.getElementById('game');
+pad.addEventListener('touchstart',function(e){var p=e.changedTouches[0];sx=p.clientX;sy=p.clientY;st=Date.now();done=false;e.preventDefault()},{passive:false});
+pad.addEventListener('touchmove',function(e){if(done)return;var p=e.changedTouches[0],dx=p.clientX-sx,dy=p.clientY-sy;if(Math.max(Math.abs(dx),Math.abs(dy))>34){done=true;act(dx,dy)}e.preventDefault()},{passive:false});
+pad.addEventListener('touchend',function(e){if(!done&&Date.now()-st<300){send('act|4')}e.preventDefault()},{passive:false});
+var mx=0,my=0,md2=false;pad.addEventListener('mousedown',function(e){mx=e.clientX;my=e.clientY;md2=true});
+pad.addEventListener('mouseup',function(e){if(!md2)return;md2=false;var dx=e.clientX-mx,dy=e.clientY-my;if(Math.max(Math.abs(dx),Math.abs(dy))>30)act(dx,dy);else send('act|4')});
+document.addEventListener('keydown',function(e){if(screen!='game')return;var k={ArrowLeft:0,ArrowRight:1,ArrowUp:2,ArrowDown:3,' ':4}[e.key];if(k!==undefined){send('act|'+k);e.preventDefault()}});
+function act(dx,dy){var a=Math.abs(dx)>Math.abs(dy)?(dx<0?0:1):(dy<0?2:3);send('act|'+a);if(navigator.vibrate)navigator.vibrate(12)}
+applyLang();
+if(savedName){show('sWait');connect()}
+</script></body></html>

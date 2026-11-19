@@ -1,0 +1,14 @@
+# Render.com Blueprint — Royal Run vositachi serveri (bepul "Web Service").
+# Bu fayl relay papkasidan yaratilgan alohida GitHub repo'ning ildizida turadi (README_RELAY.md ga qarang).
+services:
+  - type: web
+    name: royalrun-relay
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"

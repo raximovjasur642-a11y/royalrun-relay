@@ -1,0 +1,15 @@
+{
+  "name": "royalrun-relay",
+  "version": "1.0.0",
+  "description": "Royal Run — telefon joystik uchun vositachi server (xona kodi, WebSocket uzatish)",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "sync-page": "python3 tools/build_phone_page.py"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": { "ws": "^8.18.0" },
+  "license": "UNLICENSED",
+  "private": true
+}
