@@ -137,7 +137,7 @@ server.on('upgrade', (req, socket, head) => {
   wss.handleUpgrade(req, socket, head, (ws) => {
     const role = url.searchParams.get('role');
     if (role === 'host') onHost(ws, url);
-    else if (role === 'phone') onPhone(ws, (url.searchParams.get('room') || '').toUpperCase());
+    else if (role === 'phone') onPhone(ws, (url.searchParams.get('room') || '').toUpperCase(), (url.searchParams.get('pid') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 40));
     else ws.close(1008, 'role');
   });
 });
@@ -183,10 +183,20 @@ function onHost(ws, url) {
   ws.on('error', () => {});
 }
 
-function onPhone(ws, code) {
+function onPhone(ws, code, pid) {
   const room = rooms.get(code);
   if (!room) { send(ws, { t: 'noroom' }); ws.close(4004, 'noroom'); return; }
+  // Qayta ulanish: o'sha telefon (pid) eski ulanishi hali "osilib" turgan bo'lsa (proksi yopilishni kech bildiradi) — eskisini uzamiz
+  if (pid) {
+    for (const [oldId, old] of room.phones) {
+      if (old.pid !== pid) continue;
+      room.phones.delete(oldId);
+      send(room.host, { t: 'leave', id: oldId });
+      try { old.terminate(); } catch {}
+    }
+  }
   if (room.phones.size >= MAX_PHONES) { send(ws, { t: 'full' }); ws.close(4003, 'full'); return; }
+  ws.pid = pid;
   ws.isAlive = true;
   ws.on('pong', () => { ws.isAlive = true; });
   const id = room.nextId++;

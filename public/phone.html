@@ -84,10 +84,11 @@ if(!pid){pid='p'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
 var savedName=localStorage.getItem(store+'name')||localStorage.getItem('rr_name')||'';document.getElementById('nm').value=savedName;
 function send(s){if(ws&&ws.readyState==1)ws.send(s)}
 function connect(){
- document.getElementById('conn').textContent='';
  if(stopped)return;
+ if(ws&&(ws.readyState===0||ws.readyState===1))return; // ulanish ochilmoqda yoki ochiq — ikkinchisini ochmaymiz
+ document.getElementById('conn').textContent='';
  document.getElementById('waitMsg').textContent=t('connecting');
- ws=new WebSocket(wsUrl);
+ ws=new WebSocket(wsUrl+(window.RR_ROOM?'&pid='+encodeURIComponent(pid):''));
  ws.onopen=function(){send('hello|'+pid+'|'+(localStorage.getItem(store+'name')||''));document.getElementById('waitMsg').textContent=t('waiting')};
  ws.onmessage=function(e){var m;try{m=JSON.parse(e.data)}catch(x){return}on(m)};
  ws.onclose=function(){if(stopped)return;document.getElementById('conn').textContent=t('offline');setTimeout(connect,1200)};
